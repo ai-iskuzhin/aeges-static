@@ -30,8 +30,8 @@ get.aeges.top
 
 ## Deploy
 
-Push to `main`. GitHub Actions publishes the contents of `public/` to GitHub
-Pages.
+Push to `production`. GitHub Actions publishes the contents of `public/` to
+GitHub Pages.
 
 ## Local Preview
 
@@ -46,4 +46,3 @@ Open:
 ```text
 http://localhost:8080
 ```
-
