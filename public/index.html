@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Get Aeges</title>
+  <meta name="description" content="Install Aeges, a reliable governed coding runtime.">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f7f7f4;
+      --text: #171717;
+      --muted: #5d6267;
+      --line: #d9d8d1;
+      --panel: #ffffff;
+      --accent: #0f766e;
+      --accent-strong: #155e75;
+      --code-bg: #111827;
+      --code-text: #e5e7eb;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121416;
+        --text: #f4f4f5;
+        --muted: #a1a1aa;
+        --line: #2f3337;
+        --panel: #1b1f23;
+        --accent: #2dd4bf;
+        --accent-strong: #67e8f9;
+        --code-bg: #09090b;
+        --code-text: #f4f4f5;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    main {
+      width: min(980px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 56px 0 64px;
+    }
+
+    header {
+      display: grid;
+      gap: 16px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+
+    .mark {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--accent);
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 8px 0 0;
+      font-size: clamp(2rem, 6vw, 4.4rem);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .intro {
+      max-width: 720px;
+      font-size: 1.15rem;
+    }
+
+    section {
+      padding: 28px 0 0;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1.2rem;
+      letter-spacing: 0;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+
+    pre {
+      min-height: 88px;
+      margin: 12px 0 0;
+      overflow-x: auto;
+      background: var(--code-bg);
+      color: var(--code-text);
+      border-radius: 8px;
+      padding: 16px;
+      font: 0.92rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    a {
+      color: var(--accent-strong);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      margin-top: 18px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="brand"><span class="mark">A</span><span>Aeges</span></div>
+      <h1>Reliable governed coding runtime.</h1>
+      <p class="intro">Aeges owns durable task lifecycle, artifacts, approvals, and runner dispatch. Coding agents are replaceable workers.</p>
+    </header>
+
+    <section>
+      <h2>Install</h2>
+      <div class="grid">
+        <article class="panel">
+          <h2>macOS and Linux</h2>
+          <p>Use the shell installer. It installs or updates the Aeges CLI as a global .NET tool.</p>
+          <pre><code>curl -fsSL https://get.aeges.top/install.sh | sh</code></pre>
+        </article>
+
+        <article class="panel">
+          <h2>Windows PowerShell</h2>
+          <p>Use the PowerShell installer with the same release package and checksum contract.</p>
+          <pre><code>irm https://get.aeges.top/install.ps1 | iex</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Versioned Release</h2>
+      <p>Pin a release by setting <code>AEGES_VERSION</code>. The installer downloads the package from GitHub Releases and verifies <code>SHA256SUMS</code>.</p>
+      <pre><code>curl -fsSL https://get.aeges.top/install.sh | AEGES_VERSION=0.1.0-alpha.1 sh</code></pre>
+    </section>
+
+    <section>
+      <h2>Runtime Setup</h2>
+      <p>Installation only puts the <code>aeges</code> command on the machine. Runtime setup remains explicit.</p>
+      <pre><code>aeges db migrate
+aeges telegram setup
+aeges telegram start
+aeges agent start</code></pre>
+      <div class="links">
+        <a href="https://github.com/aeges-dev/aeges">GitHub</a>
+        <a href="https://github.com/aeges-dev/aeges/releases">Releases</a>
+        <a href="https://github.com/aeges-dev/aeges/blob/production/docs/install.md">Install docs</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
+
