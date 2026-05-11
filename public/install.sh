@@ -5,7 +5,7 @@ TOOL_PACKAGE="${AEGES_TOOL_PACKAGE:-Aeges.Cli}"
 TOOL_COMMAND="${AEGES_TOOL_COMMAND:-aeges}"
 VERSION="${AEGES_VERSION:-}"
 PACKAGE_SOURCE="${AEGES_PACKAGE_SOURCE:-}"
-GITHUB_REPOSITORY="${AEGES_GITHUB_REPOSITORY:-aeges-dev/aeges}"
+GITHUB_REPOSITORY="${AEGES_GITHUB_REPOSITORY:-ai-iskuzhin/aeges}"
 DOWNLOAD_BASE_URL="${AEGES_DOWNLOAD_BASE_URL:-}"
 
 usage() {
@@ -15,14 +15,14 @@ Aeges installer
 Installs or updates the Aeges CLI as a global .NET tool.
 
 Usage:
-  curl -fsSL https://raw.githubusercontent.com/aeges-dev/aeges/production/scripts/install.sh | sh
-  wget -qO- https://raw.githubusercontent.com/aeges-dev/aeges/production/scripts/install.sh | sh
+  curl -fsSL https://get.aeges.top/install.sh | sh
+  wget -qO- https://get.aeges.top/install.sh | sh
 
 Options via environment variables:
   AEGES_VERSION=0.1.0-alpha.1
   AEGES_PACKAGE_SOURCE=/path/to/packages
-  AEGES_DOWNLOAD_BASE_URL=https://github.com/aeges-dev/aeges/releases/latest/download
-  AEGES_GITHUB_REPOSITORY=aeges-dev/aeges
+  AEGES_DOWNLOAD_BASE_URL=https://github.com/ai-iskuzhin/aeges/releases/latest/download
+  AEGES_GITHUB_REPOSITORY=ai-iskuzhin/aeges
   AEGES_TOOL_PACKAGE=Aeges.Cli
   AEGES_TOOL_COMMAND=aeges
 
@@ -31,8 +31,8 @@ Local checkout example:
   AEGES_PACKAGE_SOURCE="$PWD/.artifacts/packages" AEGES_VERSION=0.1.0-alpha.1 sh scripts/install.sh
 
 Release example:
-  curl -fsSL https://raw.githubusercontent.com/aeges-dev/aeges/production/scripts/install.sh | sh
-  AEGES_VERSION=0.1.0-alpha.1 sh install.sh
+  curl -fsSL https://get.aeges.top/install.sh | sh
+  curl -fsSL https://get.aeges.top/install.sh | AEGES_VERSION=0.1.0-alpha.1 sh
 EOF
 }
 
@@ -75,32 +75,41 @@ resolve_package_source() {
         return
     fi
 
-    if [ -z "${VERSION}" ]; then
-        return
-    fi
-
     if [ -z "${DOWNLOAD_BASE_URL}" ]; then
-        DOWNLOAD_BASE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/v${VERSION}"
+        if [ -n "${VERSION}" ]; then
+            DOWNLOAD_BASE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/v${VERSION}"
+        else
+            DOWNLOAD_BASE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/latest/download"
+        fi
     fi
 
-    package_file="${TOOL_PACKAGE}.${VERSION}.nupkg"
-    package_path="${DOWNLOAD_DIR}/${package_file}"
     sums_path="${DOWNLOAD_DIR}/SHA256SUMS"
+
+    fetch "${DOWNLOAD_BASE_URL}/SHA256SUMS" "${sums_path}"
+
+    if [ -n "${VERSION}" ]; then
+        package_file="${TOOL_PACKAGE}.${VERSION}.nupkg"
+    else
+        package_file="$(awk '{print $2}' "${sums_path}" | grep "^${TOOL_PACKAGE}\\..*\\.nupkg$" | head -n 1 || true)"
+        if [ -z "${package_file}" ]; then
+            echo "SHA256SUMS does not contain a ${TOOL_PACKAGE} package." >&2
+            exit 1
+        fi
+        VERSION="${package_file#${TOOL_PACKAGE}.}"
+        VERSION="${VERSION%.nupkg}"
+    fi
+
+    package_path="${DOWNLOAD_DIR}/${package_file}"
 
     echo "Downloading ${package_file}..."
     fetch "${DOWNLOAD_BASE_URL}/${package_file}" "${package_path}"
 
-    if fetch "${DOWNLOAD_BASE_URL}/SHA256SUMS" "${sums_path}"; then
-        if command -v sha256sum >/dev/null 2>&1; then
-            (cd "${DOWNLOAD_DIR}" && grep "  ${package_file}\$" SHA256SUMS | sha256sum -c -)
-        elif command -v shasum >/dev/null 2>&1; then
-            (cd "${DOWNLOAD_DIR}" && grep "  ${package_file}\$" SHA256SUMS | shasum -a 256 -c -)
-        else
-            echo "Checksum file downloaded, but neither sha256sum nor shasum was found." >&2
-            exit 1
-        fi
+    if command -v sha256sum >/dev/null 2>&1; then
+        (cd "${DOWNLOAD_DIR}" && grep "  ${package_file}\$" SHA256SUMS | sha256sum -c -)
+    elif command -v shasum >/dev/null 2>&1; then
+        (cd "${DOWNLOAD_DIR}" && grep "  ${package_file}\$" SHA256SUMS | shasum -a 256 -c -)
     else
-        echo "Checksum file was not available; refusing to install downloaded package." >&2
+        echo "Checksum file downloaded, but neither sha256sum nor shasum was found." >&2
         exit 1
     fi
 

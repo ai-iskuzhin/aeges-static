@@ -2,7 +2,7 @@ param(
     [string]$Version = $env:AEGES_VERSION,
     [string]$PackageSource = $env:AEGES_PACKAGE_SOURCE,
     [string]$DownloadBaseUrl = $env:AEGES_DOWNLOAD_BASE_URL,
-    [string]$GithubRepository = $(if ($env:AEGES_GITHUB_REPOSITORY) { $env:AEGES_GITHUB_REPOSITORY } else { "aeges-dev/aeges" }),
+    [string]$GithubRepository = $(if ($env:AEGES_GITHUB_REPOSITORY) { $env:AEGES_GITHUB_REPOSITORY } else { "ai-iskuzhin/aeges" }),
     [string]$ToolPackage = $(if ($env:AEGES_TOOL_PACKAGE) { $env:AEGES_TOOL_PACKAGE } else { "Aeges.Cli" }),
     [string]$ToolCommand = $(if ($env:AEGES_TOOL_COMMAND) { $env:AEGES_TOOL_COMMAND } else { "aeges" }),
     [switch]$Help
@@ -17,11 +17,11 @@ Aeges installer
 Installs or updates the Aeges CLI as a global .NET tool.
 
 Usage:
-  irm https://raw.githubusercontent.com/aeges-dev/aeges/production/scripts/install.ps1 | iex
+  irm https://get.aeges.top/install.ps1 | iex
 
 Versioned release:
   `$env:AEGES_VERSION = "0.1.0-alpha.1"
-  irm https://raw.githubusercontent.com/aeges-dev/aeges/production/scripts/install.ps1 | iex
+  irm https://get.aeges.top/install.ps1 | iex
 
 Local checkout:
   dotnet pack src/Aeges.Cli/Aeges.Cli.csproj -c Release
@@ -68,21 +68,38 @@ function Resolve-PackageSource {
         return $PackageSource
     }
 
-    if ([string]::IsNullOrWhiteSpace($Version)) {
-        return $null
-    }
-
     if ([string]::IsNullOrWhiteSpace($DownloadBaseUrl)) {
-        $DownloadBaseUrl = "https://github.com/$GithubRepository/releases/download/v$Version"
+        if ([string]::IsNullOrWhiteSpace($Version)) {
+            $DownloadBaseUrl = "https://github.com/$GithubRepository/releases/latest/download"
+        } else {
+            $DownloadBaseUrl = "https://github.com/$GithubRepository/releases/download/v$Version"
+        }
     }
 
-    $packageFile = "$ToolPackage.$Version.nupkg"
-    $packagePath = Join-Path $downloadDirectory $packageFile
     $checksumsPath = Join-Path $downloadDirectory "SHA256SUMS"
+
+    Download-File -Url "$DownloadBaseUrl/SHA256SUMS" -OutputPath $checksumsPath
+
+    if ([string]::IsNullOrWhiteSpace($Version)) {
+        $packagePattern = [Regex]::Escape($ToolPackage) + "\..+\.nupkg"
+        $packageLine = Get-Content $checksumsPath |
+            Where-Object { $_ -match "\s+($packagePattern)$" } |
+            Select-Object -First 1
+
+        if ([string]::IsNullOrWhiteSpace($packageLine)) {
+            throw "SHA256SUMS does not contain a $ToolPackage package."
+        }
+
+        $packageFile = [Regex]::Match($packageLine, "\s+($packagePattern)$").Groups[1].Value
+        $script:Version = $packageFile.Substring($ToolPackage.Length + 1, $packageFile.Length - $ToolPackage.Length - 7)
+    } else {
+        $packageFile = "$ToolPackage.$Version.nupkg"
+    }
+
+    $packagePath = Join-Path $downloadDirectory $packageFile
 
     Write-Host "Downloading $packageFile..."
     Download-File -Url "$DownloadBaseUrl/$packageFile" -OutputPath $packagePath
-    Download-File -Url "$DownloadBaseUrl/SHA256SUMS" -OutputPath $checksumsPath
 
     $escapedPackageFile = [Regex]::Escape($packageFile)
     $checksumLine = Get-Content $checksumsPath |
