@@ -20,12 +20,12 @@ Usage:
   irm https://get.aeges.top/install.ps1 | iex
 
 Versioned release:
-  `$env:AEGES_VERSION = "0.1.0-alpha.1"
+  `$env:AEGES_VERSION = "0.1.0-alpha.5"
   irm https://get.aeges.top/install.ps1 | iex
 
 Local checkout:
   dotnet pack src/Aeges.Cli/Aeges.Cli.csproj -c Release
-  .\scripts\install.ps1 -PackageSource .\.artifacts\packages -Version 0.1.0-alpha.1
+  .\scripts\install.ps1 -PackageSource .\.artifacts\packages -Version 0.1.0-alpha.5
 
 Parameters and environment variables:
   -Version / AEGES_VERSION
@@ -117,7 +117,7 @@ function Resolve-PackageSource {
         throw "Checksum verification failed for $packageFile. Expected $expectedHash but got $actualHash."
     }
 
-    Write-Host "$packageFile: OK"
+    Write-Host "${packageFile}: OK"
     return $downloadDirectory
 }
 
