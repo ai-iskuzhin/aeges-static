@@ -1,5 +1,5 @@
 param(
-    [string]$Version = $env:AEGES_VERSION,
+    [string]$Version = $(if ($env:AEGES_VERSION) { $env:AEGES_VERSION } else { "0.1.0-alpha.6" }),
     [string]$PackageSource = $env:AEGES_PACKAGE_SOURCE,
     [string]$DownloadBaseUrl = $env:AEGES_DOWNLOAD_BASE_URL,
     [string]$GithubRepository = $(if ($env:AEGES_GITHUB_REPOSITORY) { $env:AEGES_GITHUB_REPOSITORY } else { "ai-iskuzhin/aeges" }),
@@ -20,12 +20,12 @@ Usage:
   irm https://get.aeges.top/install.ps1 | iex
 
 Versioned release:
-  `$env:AEGES_VERSION = "0.1.0-alpha.5"
+  `$env:AEGES_VERSION = "0.1.0-alpha.6"
   irm https://get.aeges.top/install.ps1 | iex
 
 Local checkout:
   dotnet pack src/Aeges.Cli/Aeges.Cli.csproj -c Release
-  .\scripts\install.ps1 -PackageSource .\.artifacts\packages -Version 0.1.0-alpha.5
+  .\scripts\install.ps1 -PackageSource .\.artifacts\packages -Version 0.1.0-alpha.6
 
 Parameters and environment variables:
   -Version / AEGES_VERSION
