@@ -3,7 +3,7 @@ set -eu
 
 TOOL_PACKAGE="${AEGES_TOOL_PACKAGE:-Aeges.Cli}"
 TOOL_COMMAND="${AEGES_TOOL_COMMAND:-aeges}"
-VERSION="${AEGES_VERSION:-0.1.0-alpha.7}"
+VERSION="${AEGES_VERSION:-0.1.0-alpha.8}"
 PACKAGE_SOURCE="${AEGES_PACKAGE_SOURCE:-}"
 GITHUB_REPOSITORY="${AEGES_GITHUB_REPOSITORY:-ai-iskuzhin/aeges}"
 DOWNLOAD_BASE_URL="${AEGES_DOWNLOAD_BASE_URL:-}"
@@ -19,7 +19,7 @@ Usage:
   wget -qO- https://get.aeges.top/install.sh | sh
 
 Options via environment variables:
-  AEGES_VERSION=0.1.0-alpha.7
+  AEGES_VERSION=0.1.0-alpha.8
   AEGES_PACKAGE_SOURCE=/path/to/packages
   AEGES_DOWNLOAD_BASE_URL=https://github.com/ai-iskuzhin/aeges/releases/latest/download
   AEGES_GITHUB_REPOSITORY=ai-iskuzhin/aeges
@@ -28,11 +28,11 @@ Options via environment variables:
 
 Local checkout example:
   dotnet pack src/Aeges.Cli/Aeges.Cli.csproj -c Release
-  AEGES_PACKAGE_SOURCE="$PWD/.artifacts/packages" AEGES_VERSION=0.1.0-alpha.7 sh scripts/install.sh
+  AEGES_PACKAGE_SOURCE="$PWD/.artifacts/packages" AEGES_VERSION=0.1.0-alpha.8 sh scripts/install.sh
 
 Release example:
   curl -fsSL https://get.aeges.top/install.sh | sh
-  curl -fsSL https://get.aeges.top/install.sh | AEGES_VERSION=0.1.0-alpha.7 sh
+  curl -fsSL https://get.aeges.top/install.sh | AEGES_VERSION=0.1.0-alpha.8 sh
 EOF
 }
 
